@@ -99,8 +99,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline
+ 
+// Configure the HTTP request pipeline cgfhgfhgfhgfghfghf
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
