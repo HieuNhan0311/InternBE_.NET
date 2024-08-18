@@ -10,8 +10,10 @@ namespace XuongMay.Repositories.Context
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<Order> Order { get; set; }
-
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Tasks> Tasks { get; set; }
+        public DbSet<TaskProductTracing> TaskProductTracings { get; set; }
         // user
         public virtual DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
         public virtual DbSet<ApplicationRole> ApplicationRoles => Set<ApplicationRole>();

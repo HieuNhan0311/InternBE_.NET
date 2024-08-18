@@ -303,9 +303,14 @@ namespace XuongMayBE.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Order");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.Product", b =>
@@ -327,14 +332,19 @@ namespace XuongMayBE.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("OrderId");
+
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.Task", b =>
+            modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.TaskProductTracing", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -342,18 +352,79 @@ namespace XuongMayBE.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("OrderId")
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<string>("TaskName")
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("TaskProductTracings");
+                });
+
+            modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.Tasks", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.ToTable("Tasks");
+                });
 
-                    b.ToTable("Task");
+            modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.UserInfo", b =>
@@ -541,6 +612,17 @@ namespace XuongMayBE.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.Order", b =>
+                {
+                    b.HasOne("XuongMay.Contract.Repositories.Entity.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.Product", b =>
                 {
                     b.HasOne("XuongMay.Contract.Repositories.Entity.Category", "Category")
@@ -549,18 +631,30 @@ namespace XuongMayBE.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("XuongMay.Contract.Repositories.Entity.Order", null)
+                        .WithMany("Products")
+                        .HasForeignKey("OrderId");
+
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.Task", b =>
+            modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.TaskProductTracing", b =>
                 {
-                    b.HasOne("XuongMay.Contract.Repositories.Entity.Order", "Order")
-                        .WithMany("Tasks")
-                        .HasForeignKey("OrderId")
+                    b.HasOne("XuongMay.Contract.Repositories.Entity.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.HasOne("XuongMay.Contract.Repositories.Entity.Tasks", "Task")
+                        .WithMany("TaskProductTracings")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("XuongMay.Repositories.Entity.ApplicationUser", b =>
@@ -579,7 +673,17 @@ namespace XuongMayBE.API.Migrations
 
             modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.Order", b =>
                 {
-                    b.Navigation("Tasks");
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.Tasks", b =>
+                {
+                    b.Navigation("TaskProductTracings");
+                });
+
+            modelBuilder.Entity("XuongMay.Contract.Repositories.Entity.User", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }
